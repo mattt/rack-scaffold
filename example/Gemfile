@@ -1,0 +1,6 @@
+source :rubygems
+
+gem 'rack-core-data', :require => 'rack/core-data', :path => File.join(__FILE__, "../..")
+
+gem 'thin'
+gem 'pg'
