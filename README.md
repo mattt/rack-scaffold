@@ -3,6 +3,24 @@
 
 > This is still in early stages of development, so proceed with caution when using this in a production application. Any bug reports, feature requests, or general feedback at this point would be greatly appreciated.
 
+<table>
+  <thead><tr>
+    <th>Core Data Model</th>
+    <th>REST Endpoints</th>
+  </tr></thead>
+  <tbody><tr>
+    <td><img src="http://heroku-mattt.s3.amazonaws.com/core-data-diagram.png"/></td>
+    <td><ul>
+      <li><tt>GET /artists</tt></li>
+      <li><tt>POST /artists</tt></li>
+      <li><tt>GET /artists/1</tt></li>
+      <li><tt>PUT /artists/1</tt></li>
+      <li><tt>DELETE /artsits/1</tt></li>
+      <li><tt>GET /artsits/1/songs</tt></li> 
+    </ul></td>
+  </tr></tbody>
+</table>
+
 Building web services for iOS apps is a constant struggle to coordinating data models. You're _probably_ not running Objective-C on the server, so you're stuck duplicating your business logic--allthewhile doing your best to maintain the correct conventions and idioms for each platform.
 
 `Rack::CoreData` aims to bridge the client/server divide, and save you time.
