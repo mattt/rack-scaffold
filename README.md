@@ -6,7 +6,7 @@
 <table>
   <thead><tr>
     <th>Core Data Model</th>
-    <th>REST Endpoints</th>
+    <th>API Endpoints</th>
   </tr></thead>
   <tbody><tr>
     <td><img src="http://heroku-mattt.s3.amazonaws.com/core-data-diagram.png"/></td>
@@ -16,7 +16,7 @@
       <li><tt>GET /artists/1</tt></li>
       <li><tt>PUT /artists/1</tt></li>
       <li><tt>DELETE /artsits/1</tt></li>
-      <li><tt>GET /artsits/1/songs</tt></li> 
+      <li><tt>GET /artists/1/songs</tt></li> 
     </ul></td>
   </tr></tbody>
 </table>
