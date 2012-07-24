@@ -9,7 +9,7 @@ Building web services for iOS apps is a constant struggle to coordinating data m
 
 Simply point `Rack::CoreData` at your Core Data model file, and a RESTful webserive is automatically created for you, with all of the resource endpoints you might expect in Rails. And since we're running on Rack, each endpoint can be overriden if you need to add or change any existing behavior. Likewise, any of the models can be re-opened to make any necessary adjustments.
 
-**Think of it like an API scaffold: while you may well throw all of it away eventually, having something to start with will allow you to iterate on the most important parts of your application while you're the most excited about them.**
+**Think of it like an API scaffold: while you may throw all of it away eventually, having something to start with will allow you to iterate on the most important parts of your application while you're the most excited about them.**
 
 ## Usage
 
