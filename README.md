@@ -15,7 +15,7 @@
       <li><tt>POST /artists</tt></li>
       <li><tt>GET /artists/1</tt></li>
       <li><tt>PUT /artists/1</tt></li>
-      <li><tt>DELETE /artsits/1</tt></li>
+      <li><tt>DELETE /artists/1</tt></li>
       <li><tt>GET /artists/1/songs</tt></li> 
     </ul></td>
   </tr></tbody>
@@ -25,7 +25,7 @@ Building web services for iOS apps is a constant struggle to coordinating data m
 
 `Rack::CoreData` aims to bridge the client/server divide, and save you time.
 
-Simply point `Rack::CoreData` at your Core Data model file, and a RESTful webserive is automatically created for you, with all of the resource endpoints you might expect in Rails. And since we're running on Rack, each endpoint can be overriden if you need to add or change any existing behavior. Likewise, any of the models can be re-opened to make any necessary adjustments.
+Simply point `Rack::CoreData` at your Core Data model file, and a RESTful webservice is automatically created for you, with all of the resource endpoints you might expect in Rails. And since we're running on Rack, each endpoint can be overriden if you need to add or change any existing behavior. Likewise, any of the models can be re-opened to make any necessary adjustments.
 
 **Think of it like an API scaffold: while you may throw all of it away eventually, having something to start with will allow you to iterate on the most important parts of your application while you're the most excited about them.**
 
