@@ -63,6 +63,7 @@ module Rack
                     when "Integer 32" then :int4
                     when "Integer 64" then :int8
                     when "Float" then :float4
+                    when "Double" then :float8
                     when "Decimal" then :float8
                     when "Date" then :timestamp
                     when "Boolean" then :boolean
