@@ -30,7 +30,8 @@ module Rack
       klass.dataset = entity.name.downcase.pluralize.to_sym
 
       klass.class_eval do
-        strict_param_setting = false
+        self.strict_param_setting = false
+
         plugin :json_serializer, :naked => true, :include => :url, :except => :id 
         plugin :schema
 
