@@ -31,9 +31,11 @@ module Rack
 
       klass.class_eval do
         self.strict_param_setting = false
+        self.raise_on_save_failure = false
 
         plugin :json_serializer, :naked => true, :include => :url, :except => :id 
         plugin :schema
+        plugin :validation_helpers
 
         def url
           "/#{self.class.table_name}/#{id}"
@@ -53,6 +55,8 @@ module Rack
           primary_key :id
 
           entity.attributes.each do |attribute|
+            next if attribute.transient?
+
             options = {
               :null => attribute.optional?,
               :index => attribute.indexed?,
@@ -90,9 +94,26 @@ module Rack
         create_table unless table_exists?
       end
 
+      klass.send :define_method, :validate do
+        entity.attributes.each do |attribute|
+          case attribute.type
+            when "Integer 16", "Integer 32", "Integer 64"
+              validates_integer attribute.name
+            when "Float", "Double", "Decimal" ¥
+              validates_numeric attribute.name
+            when "String"
+              validates_min_length attribute.minimum_value, attribute.name if attribute.minimum_value
+              validates_max_length attribute.maximum_value, attribute.name if attribute.maximum_value
+              validates_min_length attribute.minimum_value, attribute.name if attribute.minimum_value
+           end
+        end
+      end
+
       app.class_eval do
         include Rack::CoreData::Models
         klass = Rack::CoreData::Models.const_get(entity.name.capitalize)
+
+        disable :raise_errors, :show_exceptions
 
         get "/#{entity.name.downcase.pluralize}/?" do
           klass.all.to_json
@@ -105,7 +126,7 @@ module Rack
             record.to_json
           else
             status 406
-            record.errors.to_json
+            {errors: record.errors}.to_json
           end
         end
         
@@ -120,7 +141,7 @@ module Rack
             record.to_json
           else
             status 406
-            record.errors.to_json
+            {errors: record.errors}.to_json
           end
         end
         
@@ -130,7 +151,7 @@ module Rack
             status 200
           else
             status 406
-            record.errors.to_json
+            {errors: record.errors}.to_json
           end
         end
 
