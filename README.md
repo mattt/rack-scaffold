@@ -31,6 +31,8 @@ Simply point `Rack::CoreData` at your Core Data model file, and a RESTful webser
 
 ## Usage
 
+> The easiest way to use Rack::CoreData is to deploy to Heroku using the [Core Data Buildpack](https://github.com/mattt/heroku-buildpack-core-data). Just `git push` your `.xcdatamodel` file to Heroku, and you'll have a REST webservice up and running in a matter of seconds.
+
 ### Gemfile
 
 ```Ruby
