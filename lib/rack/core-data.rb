@@ -99,7 +99,7 @@ module Rack
           case attribute.type
             when "Integer 16", "Integer 32", "Integer 64"
               validates_integer attribute.name
-            when "Float", "Double", "Decimal" ¥
+            when "Float", "Double", "Decimal"
               validates_numeric attribute.name
             when "String"
               validates_min_length attribute.minimum_value, attribute.name if attribute.minimum_value
