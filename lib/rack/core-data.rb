@@ -104,7 +104,6 @@ module Rack
             when "String"
               validates_min_length attribute.minimum_value, attribute.name if attribute.minimum_value
               validates_max_length attribute.maximum_value, attribute.name if attribute.maximum_value
-              validates_min_length attribute.minimum_value, attribute.name if attribute.minimum_value
            end
         end
       end
