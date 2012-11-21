@@ -76,7 +76,7 @@ module Rack
                     else :varchar
                    end
 
-            column attribute.name, type, options
+            column attribute.name.to_sym, type, options
           end
 
           entity.relationships.each do |relationship|
