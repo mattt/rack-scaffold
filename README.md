@@ -36,7 +36,12 @@ Simply point `Rack::CoreData` at your Core Data model file, and a RESTful webser
 ### Gemfile
 
 ```Ruby
-$ gem 'rack-core-data', :require => 'rack/core-data' 
+source :rubygems
+
+gem 'rack-core-data', :require => 'rack/core-data'
+
+gem 'thin'
+gem 'pg'
 ```
 
 ### config.ru
