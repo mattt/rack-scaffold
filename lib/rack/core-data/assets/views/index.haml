@@ -1,0 +1,26 @@
+!!! 5
+%html{lang: "en"}
+  %head
+    %meta{charset: "utf-8"}
+    %meta{:'http-equiv' => "X-UA-Compatible", content: "IE=edge,chrome=1"}
+    %title Rack::CoreData Admin Console
+    %link{rel: "shortcut icon", href: "/favicon.ico", type: "image/x-icon"}
+    %link{rel: "license", href: "http://opensource.org/licenses/MIT", :title => "MIT License"}
+    %link{rel: "description", href: "Core Data"}
+    %link{rel: "stylesheet", href: "/stylesheets/screen.css", type: 'text/css', media: "screen", charset: "utf-8"}
+
+  %body
+    %header
+      %nav
+        .container
+          %a.brand{href: "/"} Rack::CoreData
+
+          %ul
+            %li.devices
+              %a{href: "/"} Devices
+            %li.compose
+              %a{href: "/compose"} Compose
+
+    .container{role: "main"}
+
+    %script{type: "text/javascript", src: "/javascripts/application.js" }

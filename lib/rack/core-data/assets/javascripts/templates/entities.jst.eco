@@ -1,0 +1,7 @@
+<h1>Entities</h1>
+
+<% for entity in @entities.models: %>
+  <a href="<%= entity.url() %>"><%= entity.get('name') %></a>
+<% end %>
+
+<div id="datagrid"></div>

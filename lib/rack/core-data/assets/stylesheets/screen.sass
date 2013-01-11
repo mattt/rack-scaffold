@@ -1,0 +1,111 @@
+@import "compass"
+
+$btnPrimaryBackground: #f00
+@import "bootstrap"
+
+
+@mixin helvetica-font-stack
+  font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif
+
+@mixin meslo-font-stack
+  font-family: "Meslo", Menlo, Monaco, monospace
+
+@import "./codemirror"
+@import "./preview"
+
+html body
+  font-family: "Helvetica Neue", "Helvetica", sans-serif
+  -webkit-text-stroke: 1px transparent
+  -webkit-background-clip: padding-box
+
+  & > header
+    @extend .navbar 
+    @extend .navbar-static-top
+
+    nav
+      @extend .navbar-inner
+
+
+      ul
+        @extend .nav
+
+[role="main"]
+  & > header
+    @extend .page-header
+
+    h1
+
+    aside
+      float: right
+
+  section
+    @extend .row
+
+  & > .alert
+    width: 95%
+    margin-top: 1em
+
+.alert
+  clear: both
+
+form#compose
+  +clearfix
+
+  fieldset
+    @extend .span7
+    float: left
+
+    ol
+      list-style: none
+      padding: 0
+      margin: 0
+
+    li
+      @extend .control-group
+      
+    input[type="radio"], label
+      display: inline-block
+
+    input[type="radio"]
+      margin-right: 0.5em
+      margin-top: -5px
+
+    label
+      @extend .control-label
+
+    textarea
+      display: block
+      margin-left: 1.5em
+      width: 530px
+      font-size: 0.9em
+
+  hr
+    clear: both
+    width: 100%
+    margin-top: 5em
+  
+  button
+    @extend .btn
+    @extend .btn-large
+    float: right
+
+table
+  @extend .table
+  @extend .table-bordered
+  @extend .table-hover
+
+  caption
+    span
+      float: left
+      display: block
+      position: relative
+      top: -20px
+
+form.filter
+  @extend .form-search
+  float: right
+  margin-bottom: 0
+
+  input[type="text"]
+    @extend .input-medium 
+    @extend .search-query

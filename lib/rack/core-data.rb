@@ -1,5 +1,6 @@
 require 'rack'
 require 'sinatra/base'
+require 'sinatra/param'
 
 require 'sequel'
 require 'active_support/inflector'
@@ -12,17 +13,36 @@ end
 
 module Rack
   def self.CoreData(xcdatamodel)
-    app = Class.new(Sinatra::Base) do
-      before do
-        content_type :json
-      end
-    end
-
     model = CoreData::DataModel.new(xcdatamodel)
 
     # Create each model class before implementing, in order to correctly set up relationships
     model.entities.each do |entity|
       klass = Rack::CoreData::Models.const_set(entity.name.capitalize, Class.new(Sequel::Model))
+    end
+
+    app = Class.new(Sinatra::Base) do
+      before do
+        content_type :json
+      end
+
+      helpers Sinatra::Param
+
+      options '/' do
+        links = []
+        model.entities.each do |entity|
+          links << %{</#{entity.name.downcase.pluralize}>; rel="resource"}
+        end
+
+        response['Link'] = links.join("\n")
+
+        model.entities.collect{ |entity| 
+          {
+            name: entity.name, 
+            url: "/#{entity.name.downcase.pluralize}",
+            columns: entity.attributes.collect(&:name)
+          }
+        }.to_json
+      end
     end
 
     model.entities.each do |entity|
@@ -33,12 +53,12 @@ module Rack
         self.strict_param_setting = false
         self.raise_on_save_failure = false
 
-        plugin :json_serializer, :naked => true, :include => :url, :except => :id 
+        plugin :json_serializer, naked: true, only: [:url] + (columns & entity.attributes.collect{|attribute| attribute.name.to_sym})
         plugin :schema
         plugin :validation_helpers
 
         def url
-          "/#{self.class.table_name}/#{id}"
+          "/#{self.class.table_name}/#{self[primary_key]}"
         end
 
         entity.relationships.each do |relationship|
@@ -114,11 +134,25 @@ module Rack
 
         disable :raise_errors, :show_exceptions
 
-        get "/#{entity.name.downcase.pluralize}/?" do
-          klass.all.to_json
+        get "/#{klass.table_name}/?" do
+          if params[:page] or params[:per_page]
+            param :page, Integer, default: 1, min: 1
+            param :per_page, Integer, default: 100, in: (1..100)
+
+            {
+              "#{klass.table_name}" => klass.limit(params[:per_page], (params[:page] - 1) * params[:per_page]),
+              page: params[:page],
+              total: klass.count
+            }.to_json
+          else
+            param :limit, Integer, default: 100, in: (1..100)
+            param :offset, Integer, default: 0, min: 0
+
+            klass.limit(params[:limit], params[:offset]).to_json
+          end
         end
 
-        post "/#{entity.name.downcase.pluralize}/?" do
+        post "/#{klass.table_name}/?" do
           record = klass.new(params)
           if record.save
             status 201
@@ -129,11 +163,12 @@ module Rack
           end
         end
         
-        get "/#{entity.name.downcase.pluralize}/:id/?" do
-          klass[params[:id]].to_json
+        get "/#{klass.table_name}/:id/?" do
+          record = klass[params[:id]] or halt 404
+          record.to_json
         end
 
-        put "/#{entity.name.downcase.pluralize}/:id/?" do
+        put "/#{klass.table_name}/:id/?" do
           record = klass[params[:id]] or halt 404
           if record.update(params)
             status 200
@@ -144,7 +179,7 @@ module Rack
           end
         end
         
-        delete "/#{entity.name.downcase.pluralize}/:id/?" do
+        delete "/#{klass.table_name}/:id/?" do
           record = klass[params[:id]] or halt 404
           if record.destroy
             status 200
@@ -157,7 +192,7 @@ module Rack
         entity.relationships.each do |relationship|
           next unless relationship.to_many?
 
-          get "/#{entity.name.downcase.pluralize}/:id/#{relationship.name}/?" do
+          get "/#{klass.table_name}/:id/#{relationship.name}/?" do
             klass[params[:id]].send(relationship.name).to_json
           end
         end
@@ -167,3 +202,5 @@ module Rack
     return app
   end
 end
+
+require 'rack/core-data/admin'
