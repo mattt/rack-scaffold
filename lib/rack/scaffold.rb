@@ -97,7 +97,7 @@ module Rack
               {errors: record.errors}.to_json
             end
           end
-        end if @actions.include?(:delete)
+        end if @actions.include?(:destroy)
 
         # @app.instance_eval do
         #   entity.relationships.each do |relationship|
