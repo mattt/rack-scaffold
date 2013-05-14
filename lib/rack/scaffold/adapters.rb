@@ -68,6 +68,14 @@ module Rack
         def destroy!
           raise NotImplementedError
         end
+
+        def timestamps?
+          raise NotImplementedError
+        end
+
+        def update_timestamp_field
+          raise NotImplementedError
+        end
       end
     end
   end

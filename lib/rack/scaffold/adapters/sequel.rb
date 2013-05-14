@@ -5,7 +5,7 @@ module Rack::Scaffold::Adapters
   class Sequel < Base
     extend Forwardable
 
-    def_delegators :@klass, :count, :all, :find, :[]
+    def_delegators :@klass, :count, :all, :find, :[], :update_timestamp_field
     def_delegator :@klass, :create, :create!
     def_delegator :@klass, :update, :update!
     def_delegator :@klass, :destroy, :destroy!
@@ -18,6 +18,7 @@ module Rack::Scaffold::Adapters
       def resources(model)
         model
       end
+
     end
 
     def singular
@@ -31,5 +32,10 @@ module Rack::Scaffold::Adapters
     def paginate(limit, offset)
       @klass.limit(limit, offset)
     end
+
+    def timestamps?
+      defined?(::Sequel::Plugins::Timestamps) and @klass.plugins.include?(::Sequel::Plugins::Timestamps)
+    end
+
   end
 end

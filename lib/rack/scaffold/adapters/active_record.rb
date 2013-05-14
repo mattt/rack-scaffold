@@ -15,6 +15,10 @@ module Rack::Scaffold::Adapters
       def resources(model)
         model
       end
+
+      def timestamps?
+        record_timestamps?
+      end
     end
 
     def singular
@@ -31,6 +35,10 @@ module Rack::Scaffold::Adapters
 
     def [](id)
       self.find(id)
+    end
+
+    def update_timestamp_field
+      self.attribute_names.include?("updated_at") ? "updated_at" : "updated_on"
     end
   end
 end
