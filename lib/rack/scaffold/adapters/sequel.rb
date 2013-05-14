@@ -5,7 +5,10 @@ module Rack::Scaffold::Adapters
   class Sequel < Base
     extend Forwardable
 
-    def_delegators :@klass, :count, :all, :find, :[], :create!, :update!, :destroy!
+    def_delegators :@klass, :count, :all, :find, :[]
+    def_delegator :@klass, :create, :create!
+    def_delegator :@klass, :update, :update!
+    def_delegator :@klass, :destroy, :destroy!
 
     class << self
       def ===(model)
