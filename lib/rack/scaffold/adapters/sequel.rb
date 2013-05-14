@@ -22,7 +22,7 @@ module Rack::Scaffold::Adapters
     end
 
     def singular
-      @klass.name
+      @klass.name.demodulize.downcase
     end
 
     def plural

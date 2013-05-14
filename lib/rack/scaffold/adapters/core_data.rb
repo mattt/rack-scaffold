@@ -117,7 +117,8 @@ module Rack::Scaffold::Adapters
         end
       end
 
-      super(klass)
+      
+      super(CoreData.const_set(entity.name, klass))
     end
   end
 end
