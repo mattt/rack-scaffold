@@ -20,7 +20,7 @@ module Rack
             raise NotImplementedError
           end
 
-          def resources(model)
+          def resources(model, options = {})
             raise NotImplementedError
           end
         end

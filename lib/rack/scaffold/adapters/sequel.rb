@@ -15,7 +15,7 @@ module Rack::Scaffold::Adapters
         ::Sequel::Model === model
       end
 
-      def resources(model)
+      def resources(model, options = {})
         model
       end
 

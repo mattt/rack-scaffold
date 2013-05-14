@@ -42,7 +42,7 @@ module Rack
       @adapter = Rack::Scaffold.adapters.detect{|adapter| adapter === options[:model]}
       raise "No suitable adapters found for #{options[:model]} in #{Rack::Scaffold.adapters}" unless @adapter
 
-      resources = Array(@adapter.resources(options[:model]))
+      resources = Array(@adapter.resources(options[:model], options))
       resources.each do |resource|
         @app.instance_eval do
           post "/#{resource.plural}/?" do

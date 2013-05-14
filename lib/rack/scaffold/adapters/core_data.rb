@@ -10,13 +10,13 @@ module Rack::Scaffold::Adapters
         !! ::CoreData::DataModel.new(model) rescue false
       end
 
-      def resources(xcdatamodel)
+      def resources(xcdatamodel, options = {})
         model = ::CoreData::DataModel.new(xcdatamodel)
-        model.entities.collect{|entity| new(entity)}
+        model.entities.collect{|entity| new(entity, options)}
       end
     end
 
-    def initialize(entity)
+    def initialize(entity, options = {})
       klass = Class.new(::Sequel::Model)
       klass.dataset = entity.name.downcase.pluralize.to_sym
 
@@ -27,6 +27,15 @@ module Rack::Scaffold::Adapters
         plugin :json_serializer, naked: true, include: [:url]
         plugin :schema
         plugin :validation_helpers
+
+        if options[:timestamps]
+          if options[:timestamps].instance_of? Hash
+            plugin :timestamps, options[:timestamps]
+          else
+            plugin :timestamps
+          end
+#          plugin :timestamps, create: :createdAt, update: :updatedAt
+        end
 
         def url
           "/#{self.class.table_name}/#{self[primary_key]}"
@@ -55,16 +64,16 @@ module Rack::Scaffold::Adapters
             }
 
             type = case attribute.type
-                    when "Integer 16" then :int2
-                    when "Integer 32" then :int4
-                    when "Integer 64" then :int8
-                    when "Float" then :float4
-                    when "Double" then :float8
-                    when "Decimal" then :float8
-                    when "Date" then :timestamp
-                    when "Boolean" then :boolean
-                    when "Binary" then :bytea
-                    else :varchar
+                   when "Integer 16" then :int2
+                   when "Integer 32" then :int4
+                   when "Integer 64" then :int8
+                   when "Float" then :float4
+                   when "Double" then :float8
+                   when "Decimal" then :float8
+                   when "Date" then :timestamp
+                   when "Boolean" then :boolean
+                   when "Binary" then :bytea
+                   else :varchar
                    end
 
             column attribute.name.to_sym, type, options
@@ -97,14 +106,14 @@ module Rack::Scaffold::Adapters
       klass.send :define_method, :validate do
         entity.attributes.each do |attribute|
           case attribute.type
-            when "Integer 16", "Integer 32", "Integer 64"
-              validates_integer attribute.name
-            when "Float", "Double", "Decimal"
-              validates_numeric attribute.name
-            when "String"
-              validates_min_length attribute.minimum_value, attribute.name if attribute.minimum_value
-              validates_max_length attribute.maximum_value, attribute.name if attribute.maximum_value
-           end
+          when "Integer 16", "Integer 32", "Integer 64"
+            validates_integer attribute.name
+          when "Float", "Double", "Decimal"
+            validates_numeric attribute.name
+          when "String"
+            validates_min_length attribute.minimum_value, attribute.name if attribute.minimum_value
+            validates_max_length attribute.maximum_value, attribute.name if attribute.maximum_value
+          end
         end
       end
 

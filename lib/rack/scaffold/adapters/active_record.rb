@@ -12,7 +12,7 @@ module Rack::Scaffold::Adapters
         ::ActiveRecord::Base === model
       end
 
-      def resources(model)
+      def resources(model, options = {})
         model
       end
 
