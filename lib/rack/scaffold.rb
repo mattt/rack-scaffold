@@ -39,7 +39,7 @@ module Rack
           post "/#{resource.plural}/?" do
             if record = resource.create!(params)
               status 201
-              {entity.name.downcase => record}.to_json
+              {"#{resource.singular}" => record}.to_json
             else
               status 406
               {errors: record.errors}.to_json
@@ -70,7 +70,7 @@ module Rack
 
           get "/#{resource.plural}/:id/?" do
             record = resource[params[:id]] or halt 404
-            {entity.name.downcase => record}.to_json
+            {"#{resource.singular}" => record}.to_json
           end
         end if @actions.include?(:read)
 
@@ -79,7 +79,7 @@ module Rack
             record = resource[params[:id]] or halt 404
             if record.update!(params)
               status 200
-              {entity.name.downcase => record}.to_json
+              {"#{resource.singular}" => record}.to_json
             else
               status 406
               {errors: record.errors}.to_json
