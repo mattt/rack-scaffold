@@ -20,7 +20,7 @@ module Rack
             raise NotImplementedError
           end
 
-          def resources(model)
+          def resources(model, options = {})
             raise NotImplementedError
           end
         end
@@ -66,6 +66,14 @@ module Rack
         end
 
         def destroy!
+          raise NotImplementedError
+        end
+
+        def timestamps?
+          raise NotImplementedError
+        end
+
+        def update_timestamp_field
           raise NotImplementedError
         end
       end
