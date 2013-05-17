@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "rack/scaffold/version"
 
 Gem::Specification.new do |s|
   s.name        = "rack-scaffold"
@@ -8,7 +7,7 @@ Gem::Specification.new do |s|
   s.email       = "m@mattt.me"
   s.homepage    = "http://mattt.me"
   s.license     = "MIT"
-  s.version     = Rack::Scaffold::VERSION
+  s.version     = "0.0.2"
   s.platform    = Gem::Platform::RUBY
   s.summary     = "Rack::Scaffold"
   s.description = "Automatically generate RESTful CRUD services"

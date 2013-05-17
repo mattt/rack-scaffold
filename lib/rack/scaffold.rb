@@ -3,7 +3,6 @@ require 'rack/contrib'
 require 'sinatra/base'
 require 'sinatra/param'
 
-require 'rack/scaffold/version'
 require 'rack/scaffold/adapters'
 
 module Rack
