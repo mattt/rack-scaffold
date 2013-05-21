@@ -21,6 +21,9 @@ module Rack::Scaffold::Adapters
       klass.dataset = entity.name.downcase.pluralize.to_sym
 
       klass.class_eval do
+        alias :update! :update
+        alias :destroy! :destroy
+
         self.strict_param_setting = false
         self.raise_on_save_failure = false
 
@@ -117,7 +120,7 @@ module Rack::Scaffold::Adapters
         end
       end
 
-      
+
       super(CoreData.const_set(entity.name, klass))
     end
   end
