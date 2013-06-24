@@ -12,12 +12,19 @@ module Rack::Scaffold::Adapters
 
       def resources(xcdatamodel, options = {})
         model = ::CoreData::DataModel.new(xcdatamodel)
+        # First create each model to be able to set up relationships
+        model.entities.collect{|entity| create_resource_model(entity) }
+        # Then implement each model
         model.entities.collect{|entity| new(entity, options)}
+      end
+
+      def create_resource_model(entity)
+        klass = Rack::Models.const_set(entity.name.capitalize, Class.new(::Sequel::Model))
       end
     end
 
     def initialize(entity, options = {})
-      klass = Class.new(::Sequel::Model)
+      klass = Rack::Models.const_get(entity.name.capitalize)
       klass.dataset = entity.name.downcase.pluralize.to_sym
 
       klass.class_eval do
@@ -44,15 +51,15 @@ module Rack::Scaffold::Adapters
           "/#{self.class.table_name}/#{self[primary_key]}"
         end
 
-        # entity.relationships.each do |relationship|
-        #   options = {:class => Rack::Scaffold::Models.const_get(relationship.destination.capitalize)}
+        entity.relationships.each do |relationship|
+          options = {:class => Rack::Models.const_get(relationship.destination.capitalize)}
 
-        #   if relationship.to_many?
-        #     one_to_many relationship.name.to_sym, options
-        #   else
-        #     many_to_one relationship.name.to_sym, options
-        #   end
-        # end
+          if relationship.to_many?
+            one_to_many relationship.name.to_sym, options
+          else
+            many_to_one relationship.name.to_sym, options
+          end
+        end
 
         set_schema do
           primary_key :id
@@ -120,8 +127,7 @@ module Rack::Scaffold::Adapters
         end
       end
 
-
-      super(CoreData.const_set(entity.name, klass))
+      super(klass)
     end
   end
 end
