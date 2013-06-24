@@ -47,15 +47,22 @@ module Rack::Scaffold::Adapters
 #          plugin :timestamps, create: :createdAt, update: :updatedAt
         end
 
+        if options[:nested_attributes]
+          plugin :nested_attributes
+        end
+
         def url
           "/#{self.class.table_name}/#{self[primary_key]}"
         end
 
         entity.relationships.each do |relationship|
-          options = {:class => Rack::Models.const_get(relationship.destination.capitalize)}
+          entity_options = {:class => Rack::Models.const_get(relationship.destination.capitalize)}
 
           if relationship.to_many?
-            one_to_many relationship.name.to_sym, options
+            one_to_many relationship.name.to_sym, entity_options
+            if options[:nested_attributes]
+              nested_attributes relationship.name.to_sym
+            end
           else
             many_to_one relationship.name.to_sym, options
           end
