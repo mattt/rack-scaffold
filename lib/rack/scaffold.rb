@@ -2,12 +2,16 @@ require 'rack'
 require 'rack/contrib'
 require 'sinatra/base'
 require 'sinatra/param'
+require 'sinatra/multi_route'
+require 'sinatra-websocket'
 
 require 'rack/scaffold/adapters'
 
+require 'pathname'
+
 module Rack
   class Scaffold
-    ACTIONS = [:create, :read, :update, :destroy]
+    ACTIONS = [:subscribe, :create, :read, :update, :destroy]
 
     def initialize(options = {})
       raise ArgumentError, "Missing option: :model or :models" unless options[:model] or options[:models]
@@ -18,6 +22,7 @@ module Rack
 
       @app = Class.new(Sinatra::Base) do
         use Rack::PostBodyContentTypeParser
+        register Sinatra::MultiRoute
         helpers Sinatra::Param
 
         before do
@@ -34,6 +39,33 @@ module Rack
           timestamp = most_recently_updated.send(update_timestamp_field) if most_recently_updated
           timestamp
         end
+
+        def notify!(record)
+          return unless @@sockets
+          puts pathname = Pathname.new(request.path)
+
+          lines = []
+          if record.new?
+            lines << "HTTP/1.1 201 Created"
+          elsif not record.exists?
+            lines << "HTTP/1.1 410 Gone"
+          else
+            lines << "HTTP/1.1 200 OK"
+          end
+
+          lines << "Connection: keep-alive"
+          lines << "Content-Type: application/json;charset=utf-8"
+          lines << "Content-Length: -1"
+          lines << ""
+
+          lines << record.to_json
+
+          EM.next_tick do
+            @@sockets[pathname.dirname].each do |ws|
+              ws.send(lines.join("\n"))
+            end
+          end
+        end
       end
 
       @actions = (options[:only] || ACTIONS) - (options[:except] || [])
@@ -44,8 +76,28 @@ module Rack
       resources = Array(@adapter.resources(options[:model], options))
       resources.each do |resource|
         @app.instance_eval do
+          @@sockets = Hash.new([])
+
+          route :get, :subscribe, "/#{resource.plural}/?" do
+            pass unless request.websocket?
+
+            request.websocket do |ws|
+              ws.onopen do
+                @@sockets[request.path] << ws
+              end
+
+              ws.onclose do
+                @@sockets[request.path].delete(ws)
+              end
+            end
+          end
+        end if @actions.include?(:subscribe)
+
+        @app.instance_eval do
           post "/#{resource.plural}/?" do
             if record = resource.create!(params)
+              notify!(record)
+
               status 201
               {"#{resource.singular}" => record}.to_json
             else
@@ -87,13 +139,13 @@ module Rack
             last_modified(last_modified_time(resource, record)) if resource.timestamps?
             {"#{resource.singular}" => record}.to_json
           end
-
         end if @actions.include?(:read)
 
         @app.instance_eval do
           put "/#{resource.plural}/:id/?" do
             record = resource[params[:id]] or halt 404
             if record.update!(params)
+              notify!(record)
               status 200
               {"#{resource.singular}" => record}.to_json
             else
@@ -107,6 +159,7 @@ module Rack
           delete "/#{resource.plural}/:id/?" do
             record = resource[params[:id]] or halt 404
             if record.destroy
+              notify!(record)
               status 200
             else
               status 406

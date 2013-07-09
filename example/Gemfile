@@ -1,9 +1,10 @@
 source "https://rubygems.org"
+ruby '2.0.0'
 
 gem 'rack-scaffold', require: 'rack/scaffold', path: File.join(__FILE__, "../..")
 
 gem 'sequel'
 gem 'core_data'
 
-gem 'unicorn'
+gem 'thin'
 gem 'pg'
