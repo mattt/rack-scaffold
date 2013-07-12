@@ -48,9 +48,9 @@ module Rack
           if record.new?
             lines << "HTTP/1.1 201 Created"
           elsif not record.exists?
-            lines << "HTTP/1.1 410 Gone"
+            lines << "HTTP/1.1 204 No Content"
           else
-            lines << "HTTP/1.1 200 OK"
+            lines << "HTTP/1.1 202 Accepted"
           end
 
           lines << "Connection: keep-alive"
