@@ -11,6 +11,9 @@ require 'pathname'
 
 module Rack
   class Scaffold
+    module Models
+    end
+
     ACTIONS = [:subscribe, :create, :read, :update, :destroy]
 
     def initialize(options = {})
@@ -41,30 +44,24 @@ module Rack
         end
 
         def notify!(record)
-          return unless @@sockets
+          return unless @@connections
           puts pathname = Pathname.new(request.path)
 
-          lines = []
-          if record.new?
-            lines << "HTTP/1.1 201 Created"
-          elsif not record.exists?
-            lines << "HTTP/1.1 204 No Content"
-          else
-            lines << "HTTP/1.1 202 Accepted"
-          end
+          event = if record.new?
+                    :create
+                  elsif not record.exists?
+                    :delete
+                  else
+                    :update
+                  end
 
-          lines << "Connection: keep-alive"
-          lines << "Content-Type: application/json;charset=utf-8"
-          lines << "Content-Length: -1"
-          lines << ""
+          data = record.to_json
 
-          lines << record.to_json
+          puts "Notify", data
 
-          EM.next_tick do
-            @@sockets[pathname.dirname].each do |ws|
-              ws.send(lines.join("\n"))
+            @@connections[pathname.dirname].each do |out|
+              out << "event: #{event}\ndata: #{data}\n\n"
             end
-          end
         end
       end
 
@@ -76,18 +73,16 @@ module Rack
       resources = Array(@adapter.resources(options[:model], options))
       resources.each do |resource|
         @app.instance_eval do
-          @@sockets = Hash.new([])
+          @@connections = Hash.new([])
 
           route :get, :subscribe, "/#{resource.plural}/?" do
-            pass unless request.websocket?
+            pass unless request.accept? 'text/event-stream'
 
-            request.websocket do |ws|
-              ws.onopen do
-                @@sockets[request.path] << ws
-              end
+            stream :keep_open do |out|
+              @@connections[request.path] << out
 
-              ws.onclose do
-                @@sockets[request.path].delete(ws)
+              out.callback do
+                @@connections[request.path].delete(out)
               end
             end
           end
