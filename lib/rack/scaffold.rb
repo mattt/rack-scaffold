@@ -45,7 +45,8 @@ module Rack
       resources.each do |resource|
         @app.instance_eval do
           post "/#{resource.plural}/?" do
-            if record = resource.create!(params)
+            record = resource.klass.new(params)
+            if record.save
               status 201
               {"#{resource.singular}" => record}.to_json
             else
