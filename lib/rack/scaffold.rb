@@ -47,21 +47,21 @@ module Rack
           return unless @@connections
           puts pathname = Pathname.new(request.path)
 
-          event = if record.new?
-                    :create
-                  elsif not record.exists?
-                    :delete
-                  else
-                    :update
-                  end
+          lines = []
+          lines << "event: patch"
 
-          data = record.to_json
+          op = case status
+               when 201 then :add
+               when 204 then :remove
+               else
+                 :update
+               end
 
-          puts "Notify", data
+          data = [{op: op, path: record.url, value: record}].to_json
 
-            @@connections[pathname.dirname].each do |out|
-              out << "event: #{event}\ndata: #{data}\n\n"
-            end
+          @@connections[pathname.dirname].each do |out|
+            out << "event: patch\ndata: #{data}\n\n"
+          end
         end
       end
 
@@ -78,6 +78,8 @@ module Rack
           route :get, :subscribe, "/#{resource.plural}/?" do
             pass unless request.accept? 'text/event-stream'
 
+            content_type 'text/event-stream'
+
             stream :keep_open do |out|
               @@connections[request.path] << out
 
@@ -91,9 +93,8 @@ module Rack
         @app.instance_eval do
           post "/#{resource.plural}/?" do
             if record = resource.create!(params)
-              notify!(record)
-
               status 201
+              notify!(record)
               {"#{resource.singular}" => record}.to_json
             else
               status 406
@@ -137,11 +138,11 @@ module Rack
         end if @actions.include?(:read)
 
         @app.instance_eval do
-          put "/#{resource.plural}/:id/?" do
+          route :put, :patch, "/#{resource.plural}/:id/?" do
             record = resource[params[:id]] or halt 404
             if record.update!(params)
-              notify!(record)
               status 200
+              notify!(record)
               {"#{resource.singular}" => record}.to_json
             else
               status 406
@@ -154,8 +155,8 @@ module Rack
           delete "/#{resource.plural}/:id/?" do
             record = resource[params[:id]] or halt 404
             if record.destroy
+              status 204
               notify!(record)
-              status 200
             else
               status 406
               {errors: record.errors}.to_json
