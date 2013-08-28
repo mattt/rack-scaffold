@@ -37,6 +37,10 @@ module Rack::Scaffold::Adapters
       self.find(id)
     end
 
+    def one_to_many_associations
+      @klass.reflect_on_all_associations(:has_many).collect(&:name)
+    end
+
     def update_timestamp_field
       self.attribute_names.include?("updated_at") ? "updated_at" : "updated_on"
     end

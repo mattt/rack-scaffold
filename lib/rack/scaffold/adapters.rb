@@ -53,6 +53,10 @@ module Rack
           raise NotImplementedError
         end
 
+        def one_to_many_associations
+          raise NotImplementedError
+        end
+
         def find(options = {})
           raise NotImplementedError
         end

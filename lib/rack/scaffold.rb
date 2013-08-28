@@ -132,6 +132,32 @@ module Rack
             last_modified(last_modified_time(resource, record)) if resource.timestamps?
             {"#{resource.singular}" => record}.to_json
           end
+
+          resource.one_to_many_associations.each do |association|
+            get "/#{resource.plural}/:id/#{association}/?" do
+              if params[:page] or params[:per_page]
+                param :page, Integer, default: 1, min: 1
+                param :per_page, Integer, default: 100, in: (1..100)
+
+                resources = resource.send(association).paginate(params[:per_page], (params[:page] - 1) * params[:per_page])
+
+                {
+                  "#{association}" => resources,
+                  page: params[:page],
+                  total: resource.count
+                }.to_json
+              else
+                param :limit, Integer, default: 100, in: (1..100)
+                param :offset, Integer, default: 0, min: 0
+
+                resources = resource.paginate(params[:limit], params[:offset])
+
+                {
+                  "#{association}" => resources
+                }.to_json
+              end
+            end
+          end          
         end if @actions.include?(:read)
 
         @app.instance_eval do
@@ -160,16 +186,6 @@ module Rack
             end
           end
         end if @actions.include?(:destroy)
-
-        # @app.instance_eval do
-        #   entity.relationships.each do |relationship|
-        #     next unless relationship.to_many?
-
-        #     get "/#{resource.plural}/:id/#{relationship.name}/?" do
-        #       {relationship.name => resource[params[:id]].send(relationship.name)}.to_json
-        #     end
-        #   end
-        # end
       end
     end
 

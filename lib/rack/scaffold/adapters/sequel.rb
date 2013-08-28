@@ -18,7 +18,6 @@ module Rack::Scaffold::Adapters
       def resources(model, options = {})
         model
       end
-
     end
 
     def singular
@@ -33,9 +32,12 @@ module Rack::Scaffold::Adapters
       @klass.limit(limit, offset)
     end
 
+    def one_to_many_associations
+      @klass.all_association_reflections.select{|association| association[:type] == :one_to_many}.collect{|association| association[:name]}
+    end
+
     def timestamps?
       defined?(::Sequel::Plugins::Timestamps) and @klass.plugins.include?(::Sequel::Plugins::Timestamps)
     end
-
   end
 end

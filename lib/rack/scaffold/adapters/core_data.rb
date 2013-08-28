@@ -37,22 +37,21 @@ module Rack::Scaffold::Adapters
           else
             plugin :timestamps
           end
-#          plugin :timestamps, create: :createdAt, update: :updatedAt
         end
 
         def url
           "/#{self.class.table_name}/#{self[primary_key]}"
         end
 
-        # entity.relationships.each do |relationship|
-        #   options = {:class => Rack::Scaffold::Models.const_get(relationship.destination.capitalize)}
-
-        #   if relationship.to_many?
-        #     one_to_many relationship.name.to_sym, options
-        #   else
-        #     many_to_one relationship.name.to_sym, options
-        #   end
-        # end
+        entity.relationships.each do |relationship|
+          # options = {:class => Rack::Scaffold::Models.const_get(relationship.destination.capitalize)}
+          options = {}
+          if relationship.to_many?
+            one_to_many relationship.name.to_sym, options
+          else
+            many_to_one relationship.name.to_sym, options
+          end
+        end
 
         set_schema do
           primary_key :id
@@ -119,7 +118,6 @@ module Rack::Scaffold::Adapters
           end
         end
       end
-
 
       super(CoreData.const_set(entity.name, klass))
     end
