@@ -42,7 +42,7 @@ run Rack::Scaffold model: './Example.xcdatamodeld', only: [:create, :read]
 By default, `Rack::Scaffold` will enable all of the actions described below. Actions can be whitelisted or blacklisted by passing either the `only` or `except` options, respectively.
 
 - `create` (`POST /resources`): Creates a new resource with the fields in a `www-form-urlencoded` or `application/json` encoded HTTP request body.
-- `read` (`GET /resources` & `GET /resources/123`): Reads a collection of resources or an individual resource at the specified URI. Supports pagination by passing the `page` & `per_page` parameters.
+- `read` (`GET /resources` & `GET /resources/123`): Reads a collection of resources or an individual resource at the specified URI. Supports pagination by passing either `page` & `per_page` or `limit` & `offset` parameters.
 - `update` (`PUT` OR `PATCH /resources/123`): Updates the specified resource with the fields in a `www-form-urlencoded` or `application/json` encoded HTTP request body.
 - `delete` (`DELETE /resources/123`): Deletes the specified resource.
 - `susbscribe` (`SUBSCRIBE` or `GET /resources` with `Accept: text/event-stream`): Subscribes to create, update, and delete actions performed, streaming corresponding JSON Patch diffs. You can read more about the Rocket technique for streaming REST resources at http://rocket.github.io.
