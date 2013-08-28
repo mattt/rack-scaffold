@@ -45,7 +45,8 @@ module Rack
 
         def notify!(record)
           return unless @@connections
-          puts pathname = Pathname.new(request.path)
+          
+          pathname = Pathname.new(request.path)
 
           lines = []
           lines << "event: patch"
