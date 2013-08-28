@@ -150,7 +150,7 @@ module Rack
                 param :limit, Integer, default: 100, in: (1..100)
                 param :offset, Integer, default: 0, min: 0
 
-                resources = resource.paginate(params[:limit], params[:offset])
+                resources = resource.send(association).paginate(params[:limit], params[:offset])
 
                 {
                   "#{association}" => resources
