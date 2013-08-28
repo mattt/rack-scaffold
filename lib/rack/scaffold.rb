@@ -3,7 +3,6 @@ require 'rack/contrib'
 require 'sinatra/base'
 require 'sinatra/param'
 require 'sinatra/multi_route'
-require 'sinatra-websocket'
 
 require 'rack/scaffold/adapters'
 
@@ -11,9 +10,6 @@ require 'pathname'
 
 module Rack
   class Scaffold
-    module Models
-    end
-
     ACTIONS = [:subscribe, :create, :read, :update, :destroy]
 
     def initialize(options = {})
