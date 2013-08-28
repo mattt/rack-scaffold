@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.email       = "m@mattt.me"
   s.homepage    = "http://mattt.me"
   s.license     = "MIT"
-  s.version     = "0.0.3"
+  s.version     = "0.1.0"
   s.platform    = Gem::Platform::RUBY
   s.summary     = "Rack::Scaffold"
   s.description = "Automatically generate RESTful CRUD services"
@@ -17,9 +17,6 @@ Gem::Specification.new do |s|
   s.add_dependency "sinatra", "~> 1.4"
   s.add_dependency "sinatra-contrib", "~> 1.4"
   s.add_dependency "sinatra-param", "~> 0.1"
-  s.add_dependency "sinatra-websocket", "~> 0.3"
-  s.add_dependency 'em'
-  s.add_dependency 'em-websocket'
   s.add_dependency "activesupport", ">= 3.0"
 
   s.add_development_dependency "rake"
