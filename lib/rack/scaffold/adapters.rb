@@ -80,6 +80,10 @@ module Rack
         def update_timestamp_field
           raise NotImplementedError
         end
+
+        def method_missing(method, *args, &block)
+          @klass.send(method)
+        end
       end
     end
   end

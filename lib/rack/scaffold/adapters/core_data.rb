@@ -12,7 +12,14 @@ module Rack::Scaffold::Adapters
 
       def resources(xcdatamodel, options = {})
         model = ::CoreData::DataModel.new(xcdatamodel)
-        model.entities.collect{|entity| new(entity, options)}
+        resources = model.entities.collect{|entity| resource = new(entity, options)}
+        model.entities.each do |entity|
+          resources.each do |resource|
+            resource.establish_associations!(entity)
+          end
+        end
+
+        return resources
       end
     end
 
@@ -41,16 +48,6 @@ module Rack::Scaffold::Adapters
 
         def url
           "/#{self.class.table_name}/#{self[primary_key]}"
-        end
-
-        entity.relationships.each do |relationship|
-          # options = {:class => Rack::Scaffold::Models.const_get(relationship.destination.capitalize)}
-          options = {}
-          if relationship.to_many?
-            one_to_many relationship.name.to_sym, options
-          else
-            many_to_one relationship.name.to_sym, options
-          end
         end
 
         set_schema do
@@ -120,6 +117,21 @@ module Rack::Scaffold::Adapters
       end
 
       super(CoreData.const_set(entity.name, klass))
+    end
+
+    def establish_associations!(entity)
+      klass.class_eval do
+        entity.relationships.each do |relationship|
+          options = {:class => CoreData.const_get(relationship.destination.capitalize)}
+
+          options = {}
+          if relationship.to_many?
+            one_to_many relationship.name.to_sym, options
+          else
+            many_to_one relationship.name.to_sym, options
+          end
+        end
+      end
     end
   end
 end

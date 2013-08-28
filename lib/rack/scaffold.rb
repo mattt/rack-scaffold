@@ -135,27 +135,12 @@ module Rack
 
           resource.one_to_many_associations.each do |association|
             get "/#{resource.plural}/:id/#{association}/?" do
-              if params[:page] or params[:per_page]
-                param :page, Integer, default: 1, min: 1
-                param :per_page, Integer, default: 100, in: (1..100)
+              record = resource[params[:id]] or halt 404
+              associations = record.send(association)
 
-                resources = resource.send(association).paginate(params[:per_page], (params[:page] - 1) * params[:per_page])
-
-                {
-                  "#{association}" => resources,
-                  page: params[:page],
-                  total: resource.count
-                }.to_json
-              else
-                param :limit, Integer, default: 100, in: (1..100)
-                param :offset, Integer, default: 0, min: 0
-
-                resources = resource.send(association).paginate(params[:limit], params[:offset])
-
-                {
-                  "#{association}" => resources
-                }.to_json
-              end
+              {
+                "#{association}" => associations
+              }.to_json
             end
           end          
         end if @actions.include?(:read)
