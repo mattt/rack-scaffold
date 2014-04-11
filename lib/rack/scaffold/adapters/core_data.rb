@@ -122,7 +122,7 @@ module Rack::Scaffold::Adapters
     def establish_associations!(entity)
       klass.class_eval do
         entity.relationships.each do |relationship|
-          options = {:class => CoreData.const_get(relationship.destination.capitalize)}
+          options = {:class => CoreData.const_get(relationship.destination.camelize)}
 
           options = {}
           if relationship.to_many?
