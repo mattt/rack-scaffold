@@ -92,7 +92,8 @@ module Rack
 
         @app.instance_eval do
           post "/#{resource.plural}/?" do
-            if record = resource.create!(params)
+            record = resource.klass.new(params)
+            if record.save
               status 201
               notify!(record)
               {"#{resource.singular}" => record}.to_json
