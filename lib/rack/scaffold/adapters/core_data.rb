@@ -12,20 +12,18 @@ module Rack::Scaffold::Adapters
 
       def resources(xcdatamodel, options = {})
         model = ::CoreData::DataModel.new(xcdatamodel)
-        resources = model.entities.collect{|entity| resource = new(entity, options)}
         model.entities.each do |entity|
-          resources.each do |resource|
-            resource.establish_associations!(entity)
-          end
+          self.const_set(entity.name.capitalize, Class.new(::Sequel::Model)) unless self.const_defined?(entity.name.capitalize)
         end
 
-        return resources
+        model.entities.collect{|entity| new(entity, options)}
       end
     end
 
     def initialize(entity, options = {})
-      klass = Class.new(::Sequel::Model)
-      klass.dataset = entity.name.underscore.pluralize.to_sym
+      adapter = self.class
+      klass = adapter.const_get(entity.name.capitalize)
+      klass.dataset = entity.name.downcase.pluralize.to_sym
 
       klass.class_eval do
         alias :update! :update
@@ -46,8 +44,25 @@ module Rack::Scaffold::Adapters
           end
         end
 
+        if options[:nested_attributes]
+          plugin :nested_attributes
+        end
+
         def url
           "/#{self.class.table_name}/#{self[primary_key]}"
+        end
+
+        entity.relationships.each do |relationship|
+          entity_options = {class: adapter.const_get(relationship.destination.capitalize)}
+
+          if relationship.to_many?
+            one_to_many relationship.name.to_sym, entity_options
+            if options[:nested_attributes]
+              nested_attributes relationship.name.to_sym
+            end
+          else
+            many_to_one relationship.name.to_sym, options
+          end
         end
 
         set_schema do
@@ -116,22 +131,7 @@ module Rack::Scaffold::Adapters
         end
       end
 
-      super(CoreData.const_defined?(entity.name) ? CoreData.const_get(entity.name) : CoreData.const_set(entity.name, klass))
-    end
-
-    def establish_associations!(entity)
-      klass.class_eval do
-        entity.relationships.each do |relationship|
-          class_name = relationship.destination.camelize
-          options = {class: CoreData.const_get(class_name), class_name: class_name}
-
-          if relationship.to_many?
-            one_to_many relationship.name.to_sym, options
-          else
-            many_to_one relationship.name.to_sym, options
-          end
-        end
-      end
+      super(klass)
     end
   end
 end
