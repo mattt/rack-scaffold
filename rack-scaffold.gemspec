@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.email       = "m@mattt.me"
   s.homepage    = "http://mattt.me"
   s.license     = "MIT"
-  s.version     = "0.1.0"
+  s.version     = "0.2.0"
   s.platform    = Gem::Platform::RUBY
   s.summary     = "Rack::Scaffold"
   s.description = "Automatically generate RESTful CRUD services"
