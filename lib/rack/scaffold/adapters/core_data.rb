@@ -25,7 +25,7 @@ module Rack::Scaffold::Adapters
 
     def initialize(entity, options = {})
       klass = Class.new(::Sequel::Model)
-      klass.dataset = entity.name.downcase.pluralize.to_sym
+      klass.dataset = entity.name.underscore.pluralize.to_sym
 
       klass.class_eval do
         alias :update! :update
@@ -57,9 +57,9 @@ module Rack::Scaffold::Adapters
             next if attribute.transient?
 
             options = {
-              :null => attribute.optional?,
-              :index => attribute.indexed?,
-              :default => attribute.default_value
+              null: attribute.optional?,
+              index: attribute.indexed?,
+              default: attribute.default_value
             }
 
             type = case attribute.type
@@ -80,8 +80,8 @@ module Rack::Scaffold::Adapters
 
           entity.relationships.each do |relationship|
             options = {
-              :index => true,
-              :null => relationship.optional?
+              index: true,
+              null: relationship.optional?
             }
 
             if not relationship.to_many?
@@ -116,15 +116,15 @@ module Rack::Scaffold::Adapters
         end
       end
 
-      super(CoreData.const_set(entity.name, klass))
+      super(CoreData.const_defined?(entity.name) ? CoreData.const_get(entity.name) : CoreData.const_set(entity.name, klass))
     end
 
     def establish_associations!(entity)
       klass.class_eval do
         entity.relationships.each do |relationship|
-          options = {:class => CoreData.const_get(relationship.destination.camelize)}
+          class_name = relationship.destination.camelize
+          options = {class: CoreData.const_get(class_name), class_name: class_name}
 
-          options = {}
           if relationship.to_many?
             one_to_many relationship.name.to_sym, options
           else

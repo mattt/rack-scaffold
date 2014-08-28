@@ -29,6 +29,9 @@ module Rack
         end
 
         disable :raise_errors, :show_exceptions
+        if ENV["RACK_ENV"] == "test"
+          set :raise_errors, true
+        end
 
         def last_modified_time(resource, resources)
           update_timestamp_field = resource.update_timestamp_field.to_sym
@@ -41,7 +44,7 @@ module Rack
 
         def notify!(record)
           return unless @@connections
-          
+
           pathname = Pathname.new(request.path)
 
           lines = []
@@ -73,7 +76,7 @@ module Rack
           @@connections = Hash.new([])
 
           route :get, :subscribe, "/#{resource.plural}/?" do
-            pass unless request.accept? 'text/event-stream'
+            pass unless request.accept.include? 'text/event-stream'
 
             content_type 'text/event-stream'
 
@@ -142,7 +145,7 @@ module Rack
                 "#{association}" => associations
               }.to_json
             end
-          end          
+          end
         end if @actions.include?(:read)
 
         @app.instance_eval do

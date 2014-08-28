@@ -20,6 +20,12 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport", ">= 3.0"
 
   s.add_development_dependency "rake"
+  s.add_development_dependency "rspec"
+  s.add_development_dependency "sequel"
+  s.add_development_dependency "core_data"
+  s.add_development_dependency "sqlite3"
+  s.add_development_dependency "database_cleaner"
+  s.add_development_dependency "rack-test"
 
   s.files         = Dir["./**/*"].reject { |file| file =~ /\.\/(bin|example|log|pkg|script|spec|test|vendor)/ }
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
