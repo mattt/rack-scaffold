@@ -40,7 +40,7 @@ module Rack::Scaffold::Adapters
           if options[:timestamps].instance_of? Hash
             plugin :timestamps, options[:timestamps]
           else
-            plugin :timestamps
+            plugin :timestamps, update_on_create: true
           end
         end
 
