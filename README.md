@@ -2,6 +2,8 @@
 
 **Automatically generate RESTful CRUD services**
 
+> This project is no longer maintained.
+
 ## Installation
 
 ### Gemfile
