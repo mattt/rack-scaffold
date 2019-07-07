@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.push File.expand_path('lib', __dir__)
-require "rack/scaffold/version"
+require 'rack/scaffold/version'
 
 Gem::Specification.new do |s|
   s.name        = 'rack-scaffold'
@@ -14,12 +14,12 @@ Gem::Specification.new do |s|
   s.summary     = 'Rack::Scaffold'
   s.description = 'Automatically generate RESTful CRUD services'
 
+  s.add_dependency 'activesupport', '>= 4.1.11'
   s.add_dependency 'rack', '~> 1.4'
   s.add_dependency 'rack-contrib', '~> 1.1'
   s.add_dependency 'sinatra', '~> 1.4'
   s.add_dependency 'sinatra-contrib', '~> 1.4'
   s.add_dependency 'sinatra-param', '~> 0.1'
-  s.add_runtime_dependency 'activesupport', '~> 3.0'
 
   s.add_development_dependency 'core_data'
   s.add_development_dependency 'database_cleaner'
