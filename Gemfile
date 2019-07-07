@@ -1,4 +1,5 @@
-ruby '2.0.0'
-source "https://rubygems.org"
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
 
 gemspec
