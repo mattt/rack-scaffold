@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   class Scaffold
     def self.adapters
@@ -16,11 +18,11 @@ module Rack
             super
           end
 
-          def ===(model)
+          def ===(_model)
             raise NotImplementedError
           end
 
-          def resources(model, options = {})
+          def resources(_model, _options = {})
             raise NotImplementedError
           end
         end
@@ -45,11 +47,11 @@ module Rack
           raise NotImplementedError
         end
 
-        def paginate(offset, limit)
+        def paginate(_offset, _limit)
           raise NotImplementedError
         end
 
-        def [](id)
+        def [](_id)
           raise NotImplementedError
         end
 
@@ -57,15 +59,15 @@ module Rack
           raise NotImplementedError
         end
 
-        def find(options = {})
+        def find(_options = {})
           raise NotImplementedError
         end
 
-        def create!(attributes = {})
+        def create!(_attributes = {})
           raise NotImplementedError
         end
 
-        def update!(attributes = {})
+        def update!(_attributes = {})
           raise NotImplementedError
         end
 
@@ -81,7 +83,7 @@ module Rack
           raise NotImplementedError
         end
 
-        def method_missing(method, *args, &block)
+        def method_missing(method, *_args)
           @klass.send(method)
         end
       end
@@ -91,4 +93,4 @@ end
 
 require 'rack/scaffold/adapters/active_record' if defined?(ActiveRecord::Base)
 require 'rack/scaffold/adapters/sequel' if defined?(Sequel)
-require 'rack/scaffold/adapters/core_data' if defined?(Sequel) and defined?(CoreData)
+require 'rack/scaffold/adapters/core_data' if defined?(Sequel) && defined?(CoreData)

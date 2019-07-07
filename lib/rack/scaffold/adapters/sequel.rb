@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sequel'
 require 'forwardable'
 
@@ -15,7 +17,7 @@ module Rack::Scaffold::Adapters
         ::Sequel::Model === model
       end
 
-      def resources(model, options = {})
+      def resources(model, _options = {})
         model
       end
     end
@@ -33,11 +35,11 @@ module Rack::Scaffold::Adapters
     end
 
     def one_to_many_associations
-      @klass.all_association_reflections.select{|association| association[:type] == :one_to_many}.collect{|association| association[:name]}
+      @klass.all_association_reflections.select { |association| association[:type] == :one_to_many }.collect { |association| association[:name] }
     end
 
     def timestamps?
-      defined?(::Sequel::Plugins::Timestamps) and @klass.plugins.include?(::Sequel::Plugins::Timestamps)
+      defined?(::Sequel::Plugins::Timestamps) && @klass.plugins.include?(::Sequel::Plugins::Timestamps)
     end
   end
 end

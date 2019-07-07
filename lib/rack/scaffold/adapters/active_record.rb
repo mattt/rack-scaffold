@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_record'
 require 'forwardable'
 
@@ -12,7 +14,7 @@ module Rack::Scaffold::Adapters
         ::ActiveRecord::Base === model
       end
 
-      def resources(model, options = {})
+      def resources(model, _options = {})
         model
       end
 
@@ -34,7 +36,7 @@ module Rack::Scaffold::Adapters
     end
 
     def [](id)
-      self.find(id)
+      find(id)
     end
 
     def one_to_many_associations
@@ -42,7 +44,7 @@ module Rack::Scaffold::Adapters
     end
 
     def update_timestamp_field
-      self.attribute_names.include?("updated_at") ? "updated_at" : "updated_on"
+      attribute_names.include?('updated_at') ? 'updated_at' : 'updated_on'
     end
   end
 end
